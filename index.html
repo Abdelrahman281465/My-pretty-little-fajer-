@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fajer's Five Gifts</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Nunito:wght@400;600;700&display=swap">
+<style>
+/* Layout: a quiet title, then five wrapped gifts that unlock one after another. Each opens a letter that types itself out. */
+:root{
+  color-scheme:dark;
+  --bg:#14040a;
+  --bg2:#26060f;
+  --wine:#4a0814;
+  --crimson:#9c1428;
+  --crimson-hi:#c21f38;
+  --rose:#eaa3ad;
+  --cream:#f8e6e3;
+  --muted:#c58d95;
+  --display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --body:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0}
+html,body{min-height:100%}
+body{
+  background:radial-gradient(120% 70% at 50% 0%,var(--bg2) 0%,var(--bg) 62%) fixed,var(--bg);
+  color:var(--cream);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.6;
+  padding-block:48px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  overflow-x:hidden;
+}
+#floaters{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.floater{position:absolute;bottom:-40px;color:var(--crimson);opacity:.0;animation:rise linear infinite}
+@keyframes rise{
+  0%{transform:translateY(0) translateX(0) rotate(0);opacity:0}
+  12%{opacity:.35}
+  100%{transform:translateY(-115vh) translateX(24px) rotate(20deg);opacity:0}
+}
+main{position:relative;z-index:1;max-width:1040px;margin:0 auto}
+header{text-align:center;max-width:34rem;margin:0 auto 40px}
+.kicker{font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);margin:0 0 14px}
+h1{
+  font-family:var(--display);font-style:italic;font-weight:600;
+  font-size:clamp(2.6rem,9vw,4.6rem);line-height:1.02;margin:0 0 16px;
+  text-wrap:balance;color:var(--cream);
+}
+h1 em{color:var(--rose);font-style:italic}
+.sub{margin:0;color:var(--muted);text-wrap:balance}
+
+.gifts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr;gap:14px}
+.gift{
+  position:relative;width:100%;display:grid;grid-template-columns:88px 1fr;align-items:center;gap:18px;
+  text-align:left;color:inherit;font:inherit;cursor:pointer;
+  background:linear-gradient(160deg,rgba(156,20,40,.28),rgba(74,8,20,.55));
+  border:1px solid rgba(234,163,173,.22);border-radius:18px;padding:14px 18px 14px 12px;
+  transition:transform .25s ease,border-color .25s ease,background .25s ease;
+}
+.gift:hover:not([aria-disabled="true"]){transform:translateY(-3px);border-color:rgba(234,163,173,.6)}
+.gift:focus-visible,.close:focus-visible,.next:focus-visible{outline:3px solid var(--rose);outline-offset:3px}
+.gift svg{width:88px;height:88px;display:block;overflow:visible}
+.gift .num{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--rose);display:block;margin-bottom:2px}
+.gift .name{font-family:var(--display);font-style:italic;font-weight:600;font-size:1.5rem;line-height:1.15;display:block}
+.gift .state{font-size:.88rem;color:var(--muted);display:block;margin-top:4px}
+.gift[aria-disabled="true"]{cursor:not-allowed;opacity:.5;filter:saturate(.6)}
+.gift.ready:not(.opened) svg{animation:bob 2.4s ease-in-out infinite}
+.gift.ready:not(.opened){border-color:rgba(234,163,173,.55);box-shadow:0 0 0 1px rgba(194,31,56,.4),0 10px 34px rgba(156,20,40,.28)}
+.gift.opened{background:linear-gradient(160deg,rgba(74,8,20,.7),rgba(38,6,15,.9))}
+.gift.opened .lid{transform:translate(-8px,-14px) rotate(-14deg)}
+.gift.shake{animation:shake .4s}
+.lid{transition:transform .35s ease;transform-origin:20px 44px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.b-body{fill:var(--crimson)}
+.b-lid{fill:var(--crimson-hi)}
+.b-rib{fill:var(--rose)}
+.b-shade{fill:rgba(20,4,10,.28)}
+
+footer{text-align:center;margin-top:44px;color:var(--muted);font-size:.9rem}
+
+/* letter */
+.overlay{
+  position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+  background:rgba(12,2,6,.82);
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  animation:fade .25s ease;
+}
+.overlay[hidden]{display:none}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.paper{
+  position:relative;width:100%;max-width:560px;max-height:100%;overflow-y:auto;
+  background:linear-gradient(170deg,#3a0a15,#250710);
+  border:1px solid rgba(234,163,173,.4);border-radius:20px;
+  padding:34px 28px 28px;box-shadow:0 30px 80px rgba(0,0,0,.6);
+  animation:lift .4s ease;
+}
+@keyframes lift{from{transform:translateY(18px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.paper .num{font-size:.74rem;letter-spacing:.22em;text-transform:uppercase;color:var(--rose);margin:0 0 8px}
+.paper h2{font-family:var(--display);font-style:italic;font-weight:600;font-size:clamp(1.8rem,6vw,2.4rem);line-height:1.1;margin:0 0 20px;text-wrap:balance}
+.letter{font-size:clamp(1.12rem,3.8vw,1.3rem);line-height:1.75;min-height:7.5em;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--rose);vertical-align:-.18em;margin-left:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.deco{margin:18px 0 0;font-size:1.6rem;letter-spacing:.2em;min-height:2rem}
+.sign{font-family:var(--display);font-style:italic;font-size:1.35rem;color:var(--rose);margin:6px 0 0}
+.actions{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-top:24px;flex-wrap:wrap}
+.hint{font-size:.82rem;color:var(--muted)}
+.next{
+  background:var(--crimson-hi);color:var(--cream);border:0;border-radius:999px;font:inherit;font-weight:700;
+  padding:11px 22px;cursor:pointer;transition:background .2s;
+}
+.next:hover{background:#d92a45}
+.next[hidden]{display:none}
+.close{
+  position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(234,163,173,.35);background:transparent;color:var(--cream);font-size:1.3rem;line-height:1;cursor:pointer;
+}
+.close:hover{background:rgba(234,163,173,.15)}
+
+.burst{position:fixed;z-index:30;pointer-events:none;font-size:1.6rem;animation:burst 1.8s ease-out forwards}
+@keyframes burst{
+  0%{transform:translate(0,0) scale(.4);opacity:1}
+  100%{transform:translate(var(--dx),var(--dy)) scale(1.2);opacity:0}
+}
+
+@media (min-width:900px){
+  .gifts{grid-template-columns:repeat(5,1fr);gap:16px}
+  .gift{grid-template-columns:1fr;justify-items:center;text-align:center;padding:26px 14px 22px;gap:12px}
+  .gift svg{width:112px;height:112px}
+  .gift .name{font-size:1.4rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<div id="floaters" aria-hidden="true"></div>
+
+<main>
+  <header>
+    <p class="kicker">For my little Fajer</p>
+    <h1>Five little gifts, <em>just for you</em></h1>
+    <p class="sub">Open them one at a time. Each one is waiting for you.</p>
+  </header>
+
+  <ol class="gifts" id="gifts"></ol>
+
+  <footer>Made with all my love</footer>
+</main>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="paper" role="dialog" aria-modal="true" aria-labelledby="ptitle">
+    <button class="close" id="close" aria-label="Close letter">&times;</button>
+    <p class="num" id="pnum"></p>
+    <h2 id="ptitle"></h2>
+    <p class="letter" id="letter" aria-live="polite"></p>
+    <p class="deco" id="deco" aria-hidden="true"></p>
+    <p class="sign" id="sign" hidden>your aboodi</p>
+    <div class="actions">
+      <span class="hint" id="hint">Tap the letter to show it all</span>
+      <button class="next" id="next" hidden>Next gift</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var GIFTS=[
+    {name:"I'm so sorry",
+     text:"I'm sorry for my little fajer for hurting her I didn't mean to you are my little baby"},
+    {name:"Hugs & headpatties",
+     text:"Haiiii my sweet little baby I love you so much and please allow me to huggie you and give you gently headpatties"},
+    {name:"The gentlest treat",
+     text:"You are who matters to me and you are my little baby and I want to give you the gentlest treat ever even I hurt you I know I did a mistake but I want to fix it"},
+    {name:"From your baby",
+     text:"Haiiii I'm your little baby and I miss mommy and I'm sorry for being a bad boy for mommmmyyyyy I love mommy and I want to be her good boy"},
+    {name:"One last thing",
+     text:"I love you.",sign:true}
+  ];
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var EMOJIS=["🥹","😘","😻","😽","🧁","🍪","🍓","🐱","🐣","🐥"];
+  function pick(){return EMOJIS[Math.floor(Math.random()*EMOJIS.length)]}
+  function randomEmojis(n){var o="";for(var i=0;i<n;i++)o+=pick();return o}
+  var opened=[];
+  try{var s=JSON.parse(localStorage.getItem("fajer-gifts-opened")||"[]");if(Array.isArray(s))opened=s.filter(function(n){return n>=0&&n<GIFTS.length})}catch(e){}
+  function save(){try{localStorage.setItem("fajer-gifts-opened",JSON.stringify(opened))}catch(e){}}
+  function unlockedCount(){var m=-1;opened.forEach(function(i){if(i>m)m=i});return m+2}
+
+  var list=document.getElementById("gifts");
+  var boxSvg='<svg viewBox="0 0 120 120" aria-hidden="true">'
+    +'<rect class="b-body" x="16" y="52" width="88" height="60" rx="6"/>'
+    +'<rect class="b-shade" x="16" y="98" width="88" height="14" rx="6"/>'
+    +'<rect class="b-rib" x="53" y="52" width="14" height="60"/>'
+    +'<g class="lid"><rect class="b-lid" x="10" y="36" width="100" height="22" rx="6"/>'
+    +'<rect class="b-rib" x="53" y="36" width="14" height="22"/>'
+    +'<ellipse class="b-rib" cx="46" cy="28" rx="15" ry="10" transform="rotate(-24 46 28)"/>'
+    +'<ellipse class="b-rib" cx="74" cy="28" rx="15" ry="10" transform="rotate(24 74 28)"/>'
+    +'<circle class="b-lid" cx="60" cy="33" r="6"/></g></svg>';
+
+  var buttons=GIFTS.map(function(g,i){
+    var li=document.createElement("li");
+    var b=document.createElement("button");
+    b.type="button";b.className="gift";b.id="gift-"+i;
+    b.innerHTML=boxSvg+'<span><span class="num">Gift '+(i+1)+'</span><span class="name">'+g.name+'</span><span class="state"></span></span>';
+    b.addEventListener("click",function(){openGift(i,b)});
+    li.appendChild(b);list.appendChild(li);return b;
+  });
+  function refresh(){
+    var n=unlockedCount();
+    buttons.forEach(function(b,i){
+      var isOpen=opened.indexOf(i)>-1,locked=i>=n;
+      b.classList.toggle("opened",isOpen);
+      b.classList.toggle("ready",!locked);
+      b.setAttribute("aria-disabled",locked?"true":"false");
+      b.querySelector(".state").textContent=locked?"Open gift "+i+" first":(isOpen?"Open it again":"Tap to open");
+    });
+  }
+  refresh();
+
+  var overlay=document.getElementById("overlay"),letter=document.getElementById("letter"),
+      pnum=document.getElementById("pnum"),ptitle=document.getElementById("ptitle"),
+      deco=document.getElementById("deco"),sign=document.getElementById("sign"),
+      hint=document.getElementById("hint"),nextBtn=document.getElementById("next"),
+      closeBtn=document.getElementById("close");
+  var timer=null,current=-1,lastFocus=null,full="";
+
+  function showFull(){
+    clearInterval(timer);timer=null;
+    letter.textContent=full;
+    finish();
+  }
+  function finish(){
+    var g=GIFTS[current];
+    deco.textContent=randomEmojis(6);
+    sign.hidden=!g.sign;
+    hint.textContent=current===GIFTS.length-1?"Forever yours":"";
+    nextBtn.hidden=current===GIFTS.length-1;
+    hint.hidden=current!==GIFTS.length-1;
+  }
+  function burst(){
+    if(reduce)return;
+    var w=window.innerWidth,h=window.innerHeight;
+    for(var i=0;i<18;i++){
+      var s=document.createElement("span");
+      s.className="burst";s.textContent=pick();
+      s.style.left=(w/2+(Math.random()*120-60))+"px";
+      s.style.top=(h/2+(Math.random()*60-30))+"px";
+      s.style.setProperty("--dx",(Math.random()*360-180)+"px");
+      s.style.setProperty("--dy",(-120-Math.random()*260)+"px");
+      s.style.animationDelay=(Math.random()*.35)+"s";
+      document.body.appendChild(s);
+      setTimeout(function(el){return function(){el.remove()}}(s),2400);
+    }
+  }
+  function openGift(i,btn){
+    if(i>=unlockedCount()){
+      btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");return;
+    }
+    var g=GIFTS[i];current=i;lastFocus=btn;full=g.text;
+    if(opened.indexOf(i)<0){opened.push(i);save();refresh()}
+    pnum.textContent="Gift "+(i+1)+" of "+GIFTS.length;
+    ptitle.textContent=g.name;
+    letter.textContent="";deco.textContent="";sign.hidden=true;nextBtn.hidden=true;
+    hint.hidden=false;hint.textContent="Tap the letter to show it all";
+    overlay.hidden=false;closeBtn.focus();
+    burst();
+    clearInterval(timer);
+    if(reduce){showFull();return}
+    var n=0;
+    letter.innerHTML='<span id="typed"></span><span class="caret"></span>';
+    var typed=document.getElementById("typed");
+    timer=setInterval(function(){
+      n++;typed.textContent=full.slice(0,n);
+      if(n>=full.length){clearInterval(timer);timer=null;letter.textContent=full;finish()}
+    },46);
+  }
+  function close(){
+    clearInterval(timer);timer=null;overlay.hidden=true;refresh();
+    if(lastFocus)lastFocus.focus();
+  }
+  letter.addEventListener("click",function(){if(timer)showFull()});
+  closeBtn.addEventListener("click",close);
+  overlay.addEventListener("click",function(e){if(e.target===overlay)close()});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!overlay.hidden)close()});
+  nextBtn.addEventListener("click",function(){
+    var next=current+1;close();
+    if(next<GIFTS.length)openGift(next,buttons[next]);
+  });
+
+  var fl=document.getElementById("floaters");
+  if(!reduce){
+    for(var k=0;k<16;k++){
+      var h=document.createElement("span");
+      h.className="floater";h.textContent="♥";
+      h.style.left=(Math.random()*100)+"%";
+      h.style.fontSize=(14+Math.random()*26)+"px";
+      h.style.animationDuration=(14+Math.random()*16)+"s";
+      h.style.animationDelay=(-Math.random()*20)+"s";
+      fl.appendChild(h);
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
